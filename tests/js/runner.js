@@ -78,6 +78,20 @@ test('JS Utils: slugifyTitle menghasilkan slug URL-safe', () => {
     assertEqual('', slugifyTitle(null));
 });
 
+// Search highlight test
+const searchModule = require('../../public/assets/js/search.js');
+test('JS Search: highlightKeyword menyorot kata kunci dalam teks secara tepat', () => {
+    const raw = 'Mengenal Arsitektur Multi-Agent di Antigravity';
+    const highlighted = searchModule.highlightKeyword(raw, 'arsitektur');
+    assertEqual('Mengenal <mark class="search-highlight">Arsitektur</mark> Multi-Agent di Antigravity', highlighted);
+});
+
+test('JS Search: highlightKeyword menangani multiple kata kunci dan karakter khusus regex', () => {
+    const raw = 'Panduan PHP 8.3 & Arsitektur (Native)';
+    const highlighted = searchModule.highlightKeyword(raw, 'PHP (Native)');
+    assertEqual('Panduan <mark class="search-highlight">PHP</mark> 8.3 & Arsitektur <mark class="search-highlight">(Native)</mark>', highlighted);
+});
+
 console.log("\n============================================");
 console.log(" Hasil Pengujian Unit Test JavaScript Native");
 console.log("============================================");

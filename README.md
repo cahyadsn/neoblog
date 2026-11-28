@@ -5,7 +5,7 @@
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B%20Native-777bb4?style=flat-square&logo=php&logoColor=white)](https://www.php.net/)
 [![Database](https://img.shields.io/badge/MySQL-8.0%2B%20MariaDB-4479a1?style=flat-square&logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Frontend](https://img.shields.io/badge/Frontend-Vanilla%20CSS%20%26%20JS-f7df1e?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/)
-[![Testing](https://img.shields.io/badge/Testing-Native%20153%20E2E%20%2B%2034%20Unit%20Tests-success?style=flat-square)](tests/)
+[![Testing](https://img.shields.io/badge/Testing-Native%20153%20E2E%20%2B%2041%20Unit%20Tests-success?style=flat-square)](tests/)
 [![Architecture](https://img.shields.io/badge/Architecture-Multi--Agent%20Systems-blueviolet?style=flat-square)](https://deepmind.google/)
 [![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
@@ -86,6 +86,7 @@ flowchart TD
 
 ## 3. Fitur Utama
 
+- 🔍 **Native Full-Text & Live Instant Search**: Pencarian cepat berbasis indeks `FULLTEXT` MySQL dengan modal asinkron Vanilla JS, penyorotan kata kunci (*highlighting*), navigasi keyboard (`Ctrl+K`, panah `↑`/`↓`, `Enter`, `Esc`), dan endpoint `/api/search`.
 - ⚡ **Kecepatan Instan**: Rendering sisi server murni tanpa lapisan kompilasi view engine.
 - 🎛️ **Dashboard CMS Khusus Admin**: Pengelolaan penuh draf artikel, status publikasi, dan antrean moderasi komentar.
 - 🔐 **Autentikasi Sesi & Role-Based Access Control (RBAC)**: Proteksi multi-level untuk `admin`, `editor`, dan `author` dengan regenerasi ID sesi dan penolakan otomatis role tanpa hak akses.
@@ -96,7 +97,7 @@ flowchart TD
 - 🧵 **Komentar Berjenjang (Threaded/Nested Replies)**: Mendukung balasan berjenjang antar pembaca dan balasan resmi admin/bot.
 - 🛡️ **Keamanan Berlapis (Defense-in-Depth)**: Bebas dari risiko umum OWASP Top 10 (SQLi via PDO Prepared Statements, XSS via sanitizer ganda, dan CSRF token terenkripsi).
 - 🤖 **Operasional Harian Otonom**: Script CLI siap pakai untuk auto-publish artikel harian dan auto-reply interaksi komunitas.
-- 🧪 **Zero-Dependency Test Suite**: 28 PHP Unit Tests, 6 JS Unit Tests, dan 153 Native E2E Tests yang berjalan otomatis tanpa dependensi luar.
+- 🧪 **Zero-Dependency Test Suite**: 33 PHP Unit Tests, 8 JS Unit Tests, dan 153 Native E2E Tests yang berjalan otomatis tanpa dependensi luar.
 
 ---
 

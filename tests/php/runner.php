@@ -70,5 +70,6 @@ require_once __DIR__ . '/RouterTest.php';
 require_once __DIR__ . '/AuthTest.php';
 require_once __DIR__ . '/AdminPostTest.php';
 require_once __DIR__ . '/AdminCommentTest.php';
+require_once __DIR__ . '/SearchTest.php';
 
 $runner->summary();

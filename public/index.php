@@ -18,6 +18,7 @@ $router = new Router();
 // Rute Halaman Publik
 $router->get('/', [PostController::class, 'index']);
 $router->get('/post/{slug}', [PostController::class, 'detail']);
+$router->get('/api/search', [PostController::class, 'apiSearch']);
 
 // Rute API Komentar Publik
 $router->post('/api/comments', [CommentController::class, 'store']);

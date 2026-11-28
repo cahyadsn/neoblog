@@ -18,6 +18,12 @@
             <ul class="nav-links">
                 <li><a href="/">Beranda</a></li>
                 <li>
+                    <button id="searchOpenBtn" class="nav-search-btn" aria-label="Buka Pencarian Artikel">
+                        <span>🔍 Cari...</span>
+                        <kbd class="search-kbd">Ctrl K</kbd>
+                    </button>
+                </li>
+                <li>
                     <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="Toggle tema">
                         🌙 Mode Gelap
                     </button>
@@ -47,8 +53,27 @@
         </div>
     </footer>
 
+    <!-- Modal Live Search -->
+    <div id="searchModal" class="search-modal-backdrop" role="dialog" aria-modal="true" aria-label="Pencarian Artikel">
+        <div class="search-dialog">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari artikel berdasarkan judul atau konten..." autocomplete="off" spellcheck="false">
+                <button type="button" id="searchCloseBtn" class="search-close-btn" aria-label="Tutup Pencarian">&times;</button>
+            </div>
+            <div id="searchResults" class="search-results-container">
+                <div class="search-empty-state">Ketik kata kunci untuk mencari artikel...</div>
+            </div>
+            <div class="search-footer-hint">
+                <span>Tekan <kbd class="search-kbd">↑</kbd> <kbd class="search-kbd">↓</kbd> untuk memilih</span>
+                <span><kbd class="search-kbd">Enter</kbd> untuk buka, <kbd class="search-kbd">Esc</kbd> untuk tutup</span>
+            </div>
+        </div>
+    </div>
+
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/comments.js"></script>
+    <script src="/assets/js/search.js"></script>
 </body>
 </html>

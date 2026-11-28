@@ -48,4 +48,40 @@ class PostController {
             'pageTitle' => $post['title'] . ' - NeoBlog',
         ], 'layouts/main');
     }
+
+    /**
+     * API Pencarian Artikel Asinkron
+     * GET /api/search?q={query}&limit=10
+     */
+    public function apiSearch(): void {
+        $rawQuery = $_GET['q'] ?? '';
+        $query = Sanitizer::clean(is_string($rawQuery) ? $rawQuery : '');
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 8;
+
+        if ($query === '') {
+            Response::json([
+                'success' => true,
+                'query'   => '',
+                'total'   => 0,
+                'data'    => [],
+            ]);
+            return;
+        }
+
+        try {
+            $results = Post::search($query, $limit);
+            Response::json([
+                'success' => true,
+                'query'   => $query,
+                'total'   => count($results),
+                'data'    => $results,
+            ]);
+        } catch (Throwable $e) {
+            Response::json([
+                'success' => false,
+                'error'   => 'Gagal memproses pencarian: ' . $e->getMessage(),
+                'data'    => [],
+            ], 500);
+        }
+    }
 }

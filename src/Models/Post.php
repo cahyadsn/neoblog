@@ -253,4 +253,107 @@ class Post {
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         return (bool)$stmt->execute();
     }
+
+    /**
+     * Pencarian artikel menggunakan MySQL FULLTEXT atau fallback LIKE bila FULLTEXT tidak didukung (misal testing)
+     */
+    public static function search(string $query, int $limit = 10): array {
+        $cleanQuery = trim($query);
+        if ($cleanQuery === '') {
+            return [];
+        }
+
+        $pdo = Database::getConnection();
+        $limit = max(1, min($limit, 50));
+
+        // Upayakan FULLTEXT search terlebih dahulu
+        try {
+            $sql = "SELECT p.id, p.title, p.slug, p.excerpt, p.content, p.published_at,
+                           c.name as category_name, c.slug as category_slug,
+                           MATCH(p.title, p.content) AGAINST(:query IN NATURAL LANGUAGE MODE) AS relevance
+                    FROM posts p
+                    LEFT JOIN categories c ON p.category_id = c.id
+                    WHERE p.status = 'published'
+                      AND MATCH(p.title, p.content) AGAINST(:query IN NATURAL LANGUAGE MODE)
+                    ORDER BY relevance DESC, p.published_at DESC
+                    LIMIT :limit";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':query', $cleanQuery, PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $results = $stmt->fetchAll();
+
+            // Bila hasil fulltext kosong (misal kata kunci pendek < 4 karakter dalam default ft_min_word_len MySQL),
+            // lakukan fallback cerdas dengan LIKE agar UX tetap optimal
+            if (empty($results)) {
+                return self::searchFallbackLike($cleanQuery, $limit);
+            }
+
+            return self::formatSearchResults($results, $cleanQuery);
+        } catch (Throwable $e) {
+            // Fallback ke LIKE jika database/mock tidak mendukung MATCH ... AGAINST
+            return self::searchFallbackLike($cleanQuery, $limit);
+        }
+    }
+
+    private static function searchFallbackLike(string $query, int $limit): array {
+        $pdo = Database::getConnection();
+        $escaped = str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], $query);
+        $likePattern = '%' . $escaped . '%';
+
+        $sql = "SELECT p.id, p.title, p.slug, p.excerpt, p.content, p.published_at,
+                       c.name as category_name, c.slug as category_slug
+                FROM posts p
+                LEFT JOIN categories c ON p.category_id = c.id
+                WHERE p.status = 'published'
+                  AND (p.title LIKE :likeTitle ESCAPE '\\\\' OR p.content LIKE :likeContent ESCAPE '\\\\')
+                ORDER BY p.published_at DESC, p.id DESC
+                LIMIT :limit";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':likeTitle', $likePattern, PDO::PARAM_STR);
+        $stmt->bindValue(':likeContent', $likePattern, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll();
+
+        return self::formatSearchResults($results, $query);
+    }
+
+    private static function formatSearchResults(array $rows, string $query): array {
+        $formatted = [];
+        $queryWords = array_filter(preg_split('/\s+/', preg_quote($query, '/')));
+
+        foreach ($rows as $row) {
+            $rawContent = strip_tags($row['content'] ?? '');
+            $snippet = self::generateSnippet($rawContent, $query, 140);
+
+            $formatted[] = [
+                'id'           => (int)$row['id'],
+                'title'        => (string)$row['title'],
+                'slug'         => (string)$row['slug'],
+                'category'     => $row['category_name'] ?? null,
+                'snippet'      => $snippet,
+                'published_at' => $row['published_at'] ? date('d M Y', strtotime($row['published_at'])) : null,
+            ];
+        }
+
+        return $formatted;
+    }
+
+    private static function generateSnippet(string $text, string $query, int $maxLength = 140): string {
+        $pos = stripos($text, $query);
+        if ($pos === false) {
+            $snippet = mb_substr($text, 0, $maxLength);
+            return mb_strlen($text) > $maxLength ? $snippet . '...' : $snippet;
+        }
+
+        $start = max(0, $pos - 40);
+        $snippet = mb_substr($text, $start, $maxLength);
+        $prefix = $start > 0 ? '...' : '';
+        $suffix = ($start + $maxLength < mb_strlen($text)) ? '...' : '';
+
+        return $prefix . $snippet . $suffix;
+    }
 }

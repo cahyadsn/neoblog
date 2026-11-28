@@ -45,7 +45,8 @@ CREATE TABLE IF NOT EXISTS `posts` (
     FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON DELETE SET NULL,
     INDEX `idx_posts_slug` (`slug`),
     INDEX `idx_posts_status_published` (`status`, `published_at`),
-    INDEX `idx_posts_author` (`author_id`)
+    INDEX `idx_posts_author` (`author_id`),
+    FULLTEXT INDEX `idx_posts_search` (`title`, `content`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tabel Komentar (Mendukung Threading/Nested Comments)
