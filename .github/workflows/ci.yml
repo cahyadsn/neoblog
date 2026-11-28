@@ -1,0 +1,33 @@
+name: NeoBlog CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Native Test Suite (PHP & JavaScript)
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.3'
+        extensions: pdo, pdo_mysql, mbstring
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Run PHP Native Unit Tests
+      run: php tests/php/runner.php
+
+    - name: Run JavaScript Native Unit Tests
+      run: node tests/js/runner.js
